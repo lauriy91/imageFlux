@@ -1,43 +1,42 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
 import { Task } from "src/domain/models/task.entity";
-import { ITasksRepository } from "src/domain/repositories/tasks.repository";
-import { ImageProcessor } from "src/infrastructure/image-proccessing/image.processor";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class TasksService {
   constructor(
-    private readonly tasksRepository: ITasksRepository,
-    private readonly imageProcessor: ImageProcessor
+    @InjectRepository(Task)
+    private readonly taskRepository: Repository<Task>
   ) {}
 
   async createTask(imagePath: string): Promise<Task> {
-    const task = new Task();
-    task.status = "pending";
-    task.price = Math.random() * (50 - 5) + 5;
-    task.originalPath = imagePath;
-    task.createdAt = new Date();
-    task.updatedAt = new Date();
-
-    return await this.tasksRepository.createTask(task);
+    const newTask = this.taskRepository.create({ imagePath });
+    return this.taskRepository.save(newTask);
   }
 
-  async processTask(taskId: string): Promise<Task> {
-    const task = await this.tasksRepository.getTaskById(taskId);
+  async getTask(taskId: string): Promise<Task> {
+    const task = await this.taskRepository.findOne({ where: { taskId } });
     if (!task) {
-      throw new Error("Task not found");
+      throw new NotFoundException(`Task with id ${taskId} not found`);
     }
+    return task;
+  }
 
-    try {
-      // image proccessing
-      const processedImages = await this.imageProcessor.process(task.originalPath);
-      task.status = "completed";
-      task.images = processedImages;
-      task.updatedAt = new Date();
-    } catch (error) {
-      task.status = "failed";
-      task.updatedAt = new Date();
-    }
+  async getAllTasks(): Promise<Task[]> {
+    return this.taskRepository.find();
+  }
 
-    return await this.tasksRepository.createTask(task);
+  async updateTask(taskId: string, updateTaskDto: Partial<Task>): Promise<Task> {
+    await this.taskRepository.update(taskId, updateTaskDto);
+    return this.getTask(taskId);
+  }
+
+  async partiallyUpdateTask(taskId: string, updateTaskDto: Partial<Task>): Promise<Task> {
+    return this.updateTask(taskId, updateTaskDto);
+  }
+
+  async deleteTask(taskId: string): Promise<void> {
+    await this.taskRepository.delete(taskId);
   }
 }
