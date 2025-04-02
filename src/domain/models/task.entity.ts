@@ -1,20 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm";
 
-@Entity()
+@Entity("tasks")
 export class Task {
   @PrimaryGeneratedColumn("uuid")
-  taskId: string;
+  taskId!: string;
 
-  @Column()
+  @Column({ default: "pending", nullable: false })
   status: string;
 
   @Column("decimal")
   price: number;
 
-  @Column()
-  originalPath: string;
-
-  @Column("json")
+  @Column("json", { nullable: true }) 
   images: Array<{ resolution: string; path: string }>;
 
   @Column({ nullable: true })
@@ -23,6 +20,6 @@ export class Task {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({ nullable: true })
+  updatedAt!: Date;
 }

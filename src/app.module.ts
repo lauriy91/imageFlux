@@ -1,34 +1,39 @@
 import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import { TasksController } from "./tasks/tasks.controller";
 import { TasksService } from "./application/services/tasks.service";
 import { TasksRepository } from "./infrastructure/repositories/tasks.repository.impl";
 import { MongoClient } from "mongodb";
-import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { NestFactory } from "@nestjs/core";
 import { ImageProcessor } from "./infrastructure/image-proccessing/image.processor";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Task } from "./domain/models/task.entity";
 
 @Module({
-  imports: [],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot({
+      type: "mongodb",
+      url: process.env.MONGO_URI || "mongodb://localhost:27017",
+      database: "process-image-db",
+      entities: [Task],
+      synchronize: true,
+    }),
+    TypeOrmModule.forFeature([Task]),
+  ],
   controllers: [TasksController],
   providers: [
     TasksService,
     TasksRepository,
     ImageProcessor,
-    { provide: MongoClient, useValue: new MongoClient("mongodb://localhost:27017") },
+    {
+      provide: "MONGO_CONNECTION",
+      useFactory: async () => {
+        const client = new MongoClient(process.env.MONGO_URI || "mongodb://localhost:27017");
+        await client.connect();
+        return client.db("image_processing");
+      },
+    },
   ],
+  exports: ["MONGO_CONNECTION"],
 })
-export class AppModule {
-  constructor() {}
-
-  async onModuleInit() {
-    const app = await NestFactory.create(AppModule);
-    const options = new DocumentBuilder()
-      .setTitle("API REST para Procesado de Imágenes")
-      .setDescription("API para gestionar tareas de procesado de imágenes.")
-      .setVersion("1.0")
-      .build();
-    const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup("api", app, document);
-    await app.listen(3000);
-  }
-}
+export class AppModule {}

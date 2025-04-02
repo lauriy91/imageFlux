@@ -10,9 +10,14 @@ export class TasksService {
     private readonly taskRepository: Repository<Task>
   ) {}
 
-  async createTask(imagePath: string): Promise<Task> {
-    const newTask = this.taskRepository.create({ imagePath });
-    return this.taskRepository.save(newTask);
+  async createTask(createTaskDto: Partial<Task>): Promise<Task> {
+    const newTask = this.taskRepository.create({
+      ...createTaskDto,
+      taskId: createTaskDto.taskId,
+      status: createTaskDto.status ?? "pending",
+    });
+    const savedTask = await this.taskRepository.save(newTask);
+    return savedTask;
   }
 
   async getTask(taskId: string): Promise<Task> {

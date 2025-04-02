@@ -11,8 +11,8 @@ async function bootstrap() {
 
   // Configuración Swagger (API First)
   const config = new DocumentBuilder()
-    .setTitle('Images Process API')
-    .setDescription('API REST para procesado de imágenes y consulta de tareas')
+    .setTitle('API Procesador de imagenes')
+    .setDescription('APIREST para el procesamiento de imagenes y tareas Inditex')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
