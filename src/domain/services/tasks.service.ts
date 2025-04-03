@@ -6,7 +6,6 @@ import { Repository } from "typeorm";
 import { TasksRepository } from "src/infrastructure/adapters/tasks.repository.impl";
 import { getRandomPrice } from "src/common/utils/utilities";
 import { EventEmitter2 } from '@nestjs/event-emitter';
-// import { ITasksRepository } from "../ports/itasks.repository";
 import { ImageProcessorService } from "./image-processor.service";
 
 @Injectable()
@@ -15,7 +14,6 @@ export class TasksService {
     @InjectRepository(Task)
     private readonly taskRepositoryOrm: Repository<Task>,
     private readonly taskRepository: TasksRepository,
-    // private readonly taskRepository: ITasksRepository,
     private readonly eventEmitter: EventEmitter2,
     private readonly imageProcessorService: ImageProcessorService
   ) {}
@@ -36,7 +34,6 @@ export class TasksService {
 
       const createdTask = await this.taskRepository.createTask(newTask);
 
-      // await this.taskRepository.createTask(newTask);
       this.eventEmitter.emit('task.process', newTask.taskId, newTask.originalPath);
 
       return {

@@ -10,7 +10,8 @@ export class ImageProcessorService {
     const resolutions = [1024, 800];
     const imageName = path.basename(imagePath, path.extname(imagePath));
     const hash = crypto.createHash('md5').update(imagePath).digest('hex');
-    const outputDir = path.join(__dirname, '../../../output', imageName);
+    const outputDir = path.join(__dirname, '../../../images/output', imageName);
+
 
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
