@@ -1,8 +1,8 @@
 import { Controller, Post, Body, Get, Param, Put, Patch, Delete } from "@nestjs/common";
-import { TasksService } from "../application/services/tasks.service";
-import { Task } from "../domain/models/task.entity";
+import { TasksService } from "../../domain/services/tasks.service";
+import { Task } from "../../domain/models/entities/task.entity";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { CreateTaskDto } from "src/application/dto/create-task.dto";
+import { CreateTaskDto, UpdateTaskDto } from "src/application/dto/create-task.dto";
 
 @ApiTags('tasks') 
 @Controller("tasks")
@@ -33,13 +33,15 @@ export class TasksController {
 
   @Put(':taskId')
   @ApiOperation({ summary: 'Actualizar una tarea' })
+  @ApiBody({ type: UpdateTaskDto })
   @ApiResponse({ status: 200, description: 'Tarea actualizada', type: Task })
-  async updateTask(@Param("taskId") taskId: string, @Body() updateTaskDto: Partial<Task>): Promise<Task> {
+  async updateTask(@Param("taskId") taskId: string, @Body() updateTaskDto: UpdateTaskDto): Promise<Task> {
     return this.tasksService.updateTask(taskId, updateTaskDto);
   }
 
   @Patch(":taskId")
   @ApiOperation({ summary: 'Actualizar una tarea' })
+  @ApiBody({ type: UpdateTaskDto })
   @ApiResponse({ status: 200, description: 'Tarea actualizada', type: Task })
   async partiallyUpdateTask(@Param("taskId") taskId: string, @Body() updateTaskDto: Partial<Task>): Promise<Task> {
     return this.tasksService.partiallyUpdateTask(taskId, updateTaskDto);

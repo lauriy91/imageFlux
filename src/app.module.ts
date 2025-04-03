@@ -1,12 +1,12 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { TasksController } from "./tasks/tasks.controller";
-import { TasksService } from "./application/services/tasks.service";
-import { TasksRepository } from "./infrastructure/repositories/tasks.repository.impl";
-import { MongoClient } from "mongodb";
+import { TasksController } from "./application/tasks/tasks.controller";
+import { TasksService } from "./domain/services/tasks.service";
+import { TasksRepository } from "./infrastructure/adapters/tasks.repository.impl";
 import { ImageProcessor } from "./infrastructure/image-proccessing/image.processor";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Task } from "./domain/models/task.entity";
+import { Task } from "./domain/models/entities/task.entity";
+import { mongoProvider } from "./infrastructure/datasource/data-connection";
 
 @Module({
   imports: [
@@ -25,14 +25,7 @@ import { Task } from "./domain/models/task.entity";
     TasksService,
     TasksRepository,
     ImageProcessor,
-    {
-      provide: "MONGO_CONNECTION",
-      useFactory: async () => {
-        const client = new MongoClient(process.env.MONGO_URI || "mongodb://localhost:27017");
-        await client.connect();
-        return client.db("image_processing");
-      },
-    },
+    mongoProvider,
   ],
   exports: ["MONGO_CONNECTION"],
 })

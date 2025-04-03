@@ -1,8 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm";
+import { ObjectId } from "mongodb";
+import { Entity, Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn } from "typeorm";
 
 @Entity("tasks")
 export class Task {
-  @PrimaryGeneratedColumn("uuid")
+  @ObjectIdColumn()
+  _id!: ObjectId;
+
+  @ObjectIdColumn()
   taskId!: string;
 
   @Column({ default: "pending", nullable: false })
@@ -20,6 +24,6 @@ export class Task {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ nullable: true })
+  @UpdateDateColumn()
   updatedAt!: Date;
 }

@@ -1,4 +1,4 @@
-import { Task } from "src/domain/models/task.entity";
+import { Task } from "src/domain/models/entities/task.entity";
 
 export interface ITasksRepository {
   createTask(imagePath: string, price: number): Promise<Task>;
