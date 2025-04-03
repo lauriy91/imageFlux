@@ -47,8 +47,13 @@ export class TasksService {
   }
 
   async processTask(taskId: string, imagePath: string): Promise<void> {
-    const processedImages = await this.imageProcessorService.processImage(imagePath);
-    await this.taskRepository.updateTask(taskId, { status: 'completed', images: processedImages });
+    try {
+      const processedImages = await this.imageProcessorService.processImage(imagePath);
+      await this.taskRepository.updateTask(taskId, { status: 'completed', images: processedImages });
+    } catch (error) {
+      console.error(`Error procesando la imagen: ${error.message}`);
+      await this.taskRepository.updateTask(taskId, { status: 'failed' });
+    }
   }
 
   async getTask(taskId: string): Promise<{ taskId: string; status: string; price: number; images?: { path: string }[] }> {
