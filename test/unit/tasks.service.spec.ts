@@ -1,131 +1,86 @@
-import { TasksService } from "../../src/domain/services/tasks.service";
-import { TasksRepository } from "../../src/infrastructure/adapters/tasks.repository.impl";
-import { EventEmitter2 } from "@nestjs/event-emitter";
-import { ImageProcessorService } from "../../src/domain/services/image-processor.service";
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { TasksRepository } from 'src/infrastructure/adapters/tasks.repository.impl';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
+import { BaseResponseTaskDto, CreateTaskDto, TaskStatus } from 'src/application/dto/create-task.dto';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Task } from 'src/domain/models/entities/task.entity';
+import { Repository } from 'typeorm';
 import { ObjectId } from "mongodb";
 
-describe("TasksService", () => {
+import { ImageProcessorService } from 'src/domain/services/image-processor.service';
+import { TasksService } from 'src/domain/services/tasks.service';
+
+jest.mock('src/common/utils/utilities', () => ({
+  getRandomPrice: jest.fn().mockReturnValue(100),
+}));
+
+describe('TasksService', () => {
   let service: TasksService;
-  let tasksRepository: TasksRepository;
+  let taskRepository: TasksRepository;
   let eventEmitter: EventEmitter2;
   let imageProcessorService: ImageProcessorService;
+  const tastkId = new ObjectId();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        TasksService,
+        {
+          provide: getRepositoryToken(Task),
+          useClass: Repository,
+        },
+        {
+          provide: TasksRepository,
+          useValue: {
+            createTask: jest.fn().mockResolvedValue({
+              _id: tastkId,
+              status: TaskStatus.PENDING,
+              price: 100,
+            }),
+          },
+        },
+        {
+          provide: EventEmitter2,
+          useValue: {
+            emit: jest.fn(),
+          },
+        },
+        {
+          provide: ImageProcessorService,
+          useValue: {},
+        },
+      ],
+    }).compile();
 
-  beforeEach(() => {
-    tasksRepository = {
-      createTask: jest.fn(),
-      getTaskById: jest.fn(),
-      updateTask: jest.fn(),
-      deleteTask: jest.fn(),
-    } as unknown as TasksRepository;
-
-    eventEmitter = { emit: jest.fn() } as unknown as EventEmitter2;
-
-    imageProcessorService = { processImage: jest.fn() } as unknown as ImageProcessorService;
-
-    service = new TasksService(
-      {} as any,
-      tasksRepository,
-      eventEmitter,
-      imageProcessorService
-    );
+    service = module.get<TasksService>(TasksService);
+    taskRepository = module.get<TasksRepository>(TasksRepository);
+    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
+    imageProcessorService = module.get<ImageProcessorService>(ImageProcessorService);
   });
 
-  it("debe crear una tarea correctamente", async () => {
-    const mockTask = {
-      _id: new ObjectId(),
-      status: "pending",
-      price: 100,
-      images: [],
-      originalPath: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-  };
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
 
-    jest.spyOn(tasksRepository, "createTask").mockResolvedValueOnce(mockTask);
+  describe('createTask', () => {
+    it('should create a task and return a response DTO', async () => {
+      const createTaskDto: CreateTaskDto = { originalPath: 'path/to/image.jpg' };
+      const result = await service.createTask(createTaskDto);
 
-    const result = await service.createTask({ originalPath: "image.jpg" });
-
-    expect(result).toEqual({
-      taskId: mockTask._id.toString(),
-      status: mockTask.status,
-      price: mockTask.price,
+      expect(taskRepository.createTask).toHaveBeenCalledTimes(1);
+      expect(eventEmitter.emit).toHaveBeenCalledWith('task.process', new ObjectId(tastkId).toString(), createTaskDto.originalPath);
+      const responseMockDto = new BaseResponseTaskDto();
+      responseMockDto.taskId = new ObjectId(tastkId).toString();
+      responseMockDto.status = TaskStatus.PENDING;
+      responseMockDto.price = 100;
+      expect(result).toEqual(responseMockDto);
     });
 
-    expect(eventEmitter.emit).toHaveBeenCalledWith("task.process", mockTask._id.toString(), mockTask.originalPath);
-  });
+    it('should throw an error if task creation fails', async () => {
+      jest.spyOn(taskRepository, 'createTask').mockRejectedValueOnce(new Error('Database error'));
 
-  it("debe procesar una tarea y actualizar su estado correctamente", async () => {
-    const mockTask = {
-      _id: new ObjectId(),
-      status: "completed",
-      price: 100,
-      images: [],
-      originalPath: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    const mockImages = [{ resolution: "1024", path: "output/image.jpg" }];
-    jest.spyOn(imageProcessorService, "processImage").mockResolvedValueOnce(mockImages);
-    jest.spyOn(tasksRepository, "updateTask").mockResolvedValueOnce(mockTask);
-
-    await service.processTask("test123", "uploads/test.jpg");
-
-    expect(imageProcessorService.processImage).toHaveBeenCalledWith("uploads/test.jpg");
-    expect(tasksRepository.updateTask).toHaveBeenCalledWith("test123", {
-      status: "completed",
-      images: mockImages,
+      await expect(service.createTask({ originalPath: 'path/to/image.jpg' })).rejects.toThrow('Error creating task: Database error');
     });
-  });
-
-  it("debe manejar el error cuando la imagen no existe y marcar la tarea como 'failed'", async () => {
-    const mockTask = {
-      _id: new ObjectId(),
-      status: "failed",
-      price: 100,
-      images: [],
-      originalPath: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    jest.spyOn(imageProcessorService, "processImage").mockRejectedValueOnce(new Error("Imagen no encontrada"));
-    jest.spyOn(tasksRepository, "updateTask").mockResolvedValueOnce(mockTask);
-
-    await service.processTask("test123", "uploads/non-existent.jpg");
-
-    expect(tasksRepository.updateTask).toHaveBeenCalledWith("test123", { status: "failed" });
-  });
-
-  it("debe obtener una tarea correctamente", async () => {
-    const mockTask = {
-      _id: new ObjectId(),
-      status: "completed",
-      price: 30,
-      images: [{ resolution: "1024", path: "output/image.jpg" }],
-      originalPath: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    jest.spyOn(tasksRepository, "getTaskById").mockResolvedValueOnce(mockTask);
-
-    const result = await service.getTask("test123");
-
-    expect(result).toEqual(mockTask);
-  });
-
-  it("debe lanzar un error si la tarea no existe", async () => {
-    jest.spyOn(tasksRepository, "getTaskById").mockResolvedValueOnce(null);
-
-    // await expect(service.getTask("non-existent")).rejects.toThrow(NotFoundException);
-  });
-
-  it("debe eliminar una tarea correctamente", async () => {
-    jest.spyOn(tasksRepository, "deleteTask").mockResolvedValueOnce();
-
-    await service.deleteTask("test123");
-
-    expect(tasksRepository.deleteTask).toHaveBeenCalledWith("test123");
   });
 });

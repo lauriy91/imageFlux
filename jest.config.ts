@@ -1,3 +1,5 @@
+import { compilerOptions } from "./tsconfig.json";
+import { pathsToModuleNameMapper } from "ts-jest";
 export default {
   rootDir: './',
   testMatch: ['<rootDir>/test/unit/**/*.spec.ts', '<rootDir>/test/integration/**/*.spec.ts'],
@@ -14,9 +16,8 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   moduleFileExtensions: ["ts", "tsx", "js"],
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
   transform: {
     "^.+\\.tsx?$": "ts-jest"
   }
 };
-  
-  
