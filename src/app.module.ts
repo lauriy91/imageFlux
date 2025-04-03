@@ -7,6 +7,9 @@ import { ImageProcessor } from "./infrastructure/image-proccessing/image.process
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Task } from "./domain/models/entities/task.entity";
 import { mongoProvider } from "./infrastructure/datasource/data-connection";
+import { MongooseModule } from '@nestjs/mongoose';
+import { TaskSchema } from "./domain/schemas/task.schema";
+import { TasksModule } from "./application/tasks/tasks.module";
 
 @Module({
   imports: [
@@ -19,6 +22,8 @@ import { mongoProvider } from "./infrastructure/datasource/data-connection";
       synchronize: true,
     }),
     TypeOrmModule.forFeature([Task]),
+    MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
+    TasksModule,
   ],
   controllers: [TasksController],
   providers: [
@@ -26,7 +31,8 @@ import { mongoProvider } from "./infrastructure/datasource/data-connection";
     TasksRepository,
     ImageProcessor,
     mongoProvider,
+    ImageProcessor
   ],
-  exports: ["MONGO_CONNECTION"],
+  exports: ["MONGO_CONNECTION", ImageProcessor],
 })
 export class AppModule {}

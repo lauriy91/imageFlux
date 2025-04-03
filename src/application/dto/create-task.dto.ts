@@ -12,11 +12,11 @@ export class CreateTaskDto {
   @IsNumber()
   price: number;
 
-  @ApiProperty({ example: "image1.jpg", description: "Nombre imagen" })
+  @ApiProperty({ example: "[{'path': '/output/image6/1024/f322b730b287.jpg'}, {'path': '/output/image7/800/202fd8b3174.jpg'}]", description: "Lista de iamgenes procesadas" })
   @IsString()
   images: [];
 
-  @ApiProperty({ example: "uploads/image1.jpg", description: "Ruta donde se halla la imagen a guardar" })
+  @ApiProperty({ example: "uploads/image1.jpg", description: "Ruta donde se halla la imagen original" })
   @IsString()
   originalPath: string;
 }
@@ -28,12 +28,12 @@ export class UpdateTaskDto {
   @IsOptional()
   status?: string;
 
-  @ApiProperty({ example: 13, description: "Precio de la tarea" })
+  @ApiProperty({ example: 13, description: "Precio de la imagen" })
   @IsNumber()
   @IsOptional()
   price?: number;
 
-  @ApiProperty({ example: "uploads/image.jpg", description: "Ruta de la imagen" })
+  @ApiProperty({ example: "uploads/image.jpg", description: "Ruta de la imagen original" })
   @IsString()
   @IsOptional()
   originalPath?: string;

@@ -188,7 +188,7 @@ docker-compose up --build
 Tarea eliminada
 ```
 
-## 🧪 Pruebas Unitarias e Integración
+## Pruebas Unitarias e Integración
 
 Las pruebas se encuentran en el directorio `tests/`. Se han implementado pruebas unitarias para el servicio y pruebas de integración para validar la API completa.
 

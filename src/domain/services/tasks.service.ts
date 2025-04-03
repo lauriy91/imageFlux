@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { Task } from "src/domain/models/entities/task.entity";
 import { Repository } from "typeorm";
 import { TasksRepository } from "src/infrastructure/adapters/tasks.repository.impl";
+import { getRandomPrice } from "src/common/utils/get-random-price";
 
 @Injectable()
 export class TasksService {
@@ -13,10 +14,6 @@ export class TasksService {
     private readonly taskRepository: TasksRepository
   ) {}
 
-  private getRandomPrice(min: number = 5, max: number = 50): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
   async createTask(createTaskDto: Partial<Task>): Promise<{ taskId: string; status: string; price: number }> {
     try {
       const newTask = {
@@ -24,7 +21,7 @@ export class TasksService {
         _id: new ObjectId(),
         taskId: new ObjectId().toString(),
         status: createTaskDto.status ?? "pending",
-        price: createTaskDto.price ?? this.getRandomPrice(),
+        price: createTaskDto.price ?? getRandomPrice(),
         images: createTaskDto.images ?? [],
         originalPath: createTaskDto.originalPath ?? "",
         createdAt: new Date(),

@@ -1,17 +1,20 @@
 import { ObjectId } from "mongodb";
-import { Entity, Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn } from "typeorm";
+import { Entity, Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn, Index } from "typeorm";
 
 @Entity("tasks")
 export class Task {
   @ObjectIdColumn()
   _id!: ObjectId;
 
+  @Index({ unique: true })
   @ObjectIdColumn()
   taskId!: string;
 
+  @Index()
   @Column({ default: "pending", nullable: false })
   status: string;
 
+  @Index()
   @Column("decimal")
   price: number;
 
