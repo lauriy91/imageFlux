@@ -8,17 +8,29 @@ export enum TaskStatus {
 }
 
 export class CreateTaskDto {
+  @ApiProperty({ example: "images/uploads/image1.jpg", description: "Ruta donde se halla la imagen original" })
+  @IsString()
+  originalPath: string;
+
+}
+export class BaseResponseTaskDto {
   @ApiProperty({ example: "5.00", description: "Precio de la imagen" })
   @IsNumber()
   price: number;
 
-  @ApiProperty({ example: "[{'path': '/output/image6/1024/f322b730b287.jpg'}, {'path': '/output/image7/800/202fd8b3174.jpg'}]", description: "Lista de iamgenes procesadas" })  
+  @ApiProperty({ example: "completed", description: "Nuevo estado de la tarea: pending, completed, failed" })  
   @IsString()
-  images: [];
+  status: string;
 
-  @ApiProperty({ example: "uploads/image1.jpg", description: "Ruta donde se halla la imagen original" })
+  @ApiProperty({ example: "67eed931bcb01bffa2f13634", description: "Id de la operación" })
   @IsString()
-  originalPath: string;
+  taskId: string;
+}
+
+export class ResponseDetailsTaskDto extends BaseResponseTaskDto {
+  @ApiProperty({ example: "[{'path': '...\\output\\imagen-prueba2\\1024\\12a1c494a2819bfbb0cb739cb0d2abd7.jpg'}, {'path': '...\\images\\output\\imagen-prueba2\\800\\12a1c494a2819bfbb0cb739cb0d2abd7.jpg'}]", description: "Rutas de imagenes procesadas"})
+  @IsString()
+  images?: [{path: string}] | null;
 }
 
 export class UpdateTaskDto {

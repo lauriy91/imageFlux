@@ -6,9 +6,6 @@ export class Task {
   @ObjectIdColumn()
   _id!: ObjectId;
 
-  @ObjectIdColumn()
-  taskId!: string;
-
   @Index()
   @Column({ default: "pending", nullable: false })
   status: string;
@@ -24,8 +21,8 @@ export class Task {
   originalPath: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt: Date;
 }

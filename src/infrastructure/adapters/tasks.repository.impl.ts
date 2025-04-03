@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Db } from "mongodb";
+import { Db, ObjectId } from "mongodb";
 import { ITasksRepository } from "src/domain/ports/itasks.repository";
 import { Task } from "src/domain/models/entities/task.entity";
 
@@ -13,7 +13,8 @@ export class TasksRepository implements ITasksRepository {
   }
 
   async getTaskById(taskId: string): Promise<Task | null> {
-    return await this.database.collection<Task>("tasks").findOne({ taskId });
+    const _id = new ObjectId(taskId) 
+    return await this.database.collection<Task>("tasks").findOne({ _id });
   }
 
   async getAllTasks(): Promise<Task[]> {
@@ -21,8 +22,9 @@ export class TasksRepository implements ITasksRepository {
   }
 
   async updateTask(taskId: string, updateTaskDto: Partial<Task>): Promise<Task> {
+    const _id = new ObjectId(taskId) 
     await this.database.collection("tasks").updateOne(
-      { taskId },
+      { _id },
       { $set: { ...updateTaskDto, updatedAt: new Date() } }
     );
     return this.getTaskById(taskId) as Promise<Task>;
@@ -33,6 +35,7 @@ export class TasksRepository implements ITasksRepository {
   }
 
   async deleteTask(taskId: string): Promise<void> {
-    await this.database.collection("tasks").deleteOne({ taskId });
+    const _id = new ObjectId(taskId) 
+    await this.database.collection("tasks").deleteOne({ _id });
   }
 }
