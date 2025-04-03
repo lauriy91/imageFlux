@@ -45,7 +45,9 @@ export class TasksService {
   async getTask(taskId: string): Promise<{ taskId: string; status: string; price: number; images?: { path: string }[] }> {
     try {
       const task = await this.taskRepository.getTaskById(taskId);
-      if (!task) throw new Error("Task not found");
+      if (!task) {
+        throw new NotFoundException(`Task with ID ${taskId} not found`);
+      }
     
       const response: { taskId: string; status: string; price: number; images?: { path: string }[] } = {
         taskId: task.taskId,
@@ -59,7 +61,7 @@ export class TasksService {
     
       return response;
     } catch (error) {
-      throw new Error(`Error fetching task: ${error.message}`);
+      throw new NotFoundException(`Task with ID ${taskId} not found`);
     }
   }
 
