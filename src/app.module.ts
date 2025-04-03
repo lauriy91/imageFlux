@@ -3,10 +3,12 @@ import { ConfigModule } from "@nestjs/config";
 import { TasksController } from "./application/tasks/tasks.controller";
 import { TasksService } from "./domain/services/tasks.service";
 import { TasksRepository } from "./infrastructure/adapters/tasks.repository.impl";
-import { ImageProcessor } from "./infrastructure/image-proccessing/image.processor";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Task } from "./domain/models/entities/task.entity";
 import { mongoProvider } from "./infrastructure/datasource/data-connection";
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TaskEventsListener } from "./common/utils/task-events";
+import { ImageProcessorService } from "./domain/services/image-processor.service";
 
 @Module({
   imports: [
@@ -19,13 +21,15 @@ import { mongoProvider } from "./infrastructure/datasource/data-connection";
       synchronize: true,
     }),
     TypeOrmModule.forFeature([Task]),
+    EventEmitterModule.forRoot(),
   ],
   controllers: [TasksController],
   providers: [
     TasksService,
     TasksRepository,
-    ImageProcessor,
+    ImageProcessorService,
     mongoProvider,
+    TaskEventsListener
   ],
   exports: ["MONGO_CONNECTION"],
 })

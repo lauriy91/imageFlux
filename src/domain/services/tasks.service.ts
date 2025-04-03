@@ -4,18 +4,21 @@ import { ObjectId } from "mongodb";
 import { Task } from "src/domain/models/entities/task.entity";
 import { Repository } from "typeorm";
 import { TasksRepository } from "src/infrastructure/adapters/tasks.repository.impl";
+import { getRandomPrice } from "src/common/utils/utilities";
+import { EventEmitter2 } from '@nestjs/event-emitter';
+// import { ITasksRepository } from "../ports/itasks.repository";
+import { ImageProcessorService } from "./image-processor.service";
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task)
     private readonly taskRepositoryOrm: Repository<Task>,
-    private readonly taskRepository: TasksRepository
+    private readonly taskRepository: TasksRepository,
+    // private readonly taskRepository: ITasksRepository,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly imageProcessorService: ImageProcessorService
   ) {}
-
-  private getRandomPrice(min: number = 5, max: number = 50): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
 
   async createTask(createTaskDto: Partial<Task>): Promise<{ taskId: string; status: string; price: number }> {
     try {
@@ -24,13 +27,17 @@ export class TasksService {
         _id: new ObjectId(),
         taskId: new ObjectId().toString(),
         status: createTaskDto.status ?? "pending",
-        price: createTaskDto.price ?? this.getRandomPrice(),
+        price: createTaskDto.price ?? getRandomPrice(),
         images: createTaskDto.images ?? [],
         originalPath: createTaskDto.originalPath ?? "",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+
       const createdTask = await this.taskRepository.createTask(newTask);
+
+      // await this.taskRepository.createTask(newTask);
+      this.eventEmitter.emit('task.process', newTask.taskId, newTask.originalPath);
 
       return {
         taskId: createdTask.taskId,
@@ -40,6 +47,11 @@ export class TasksService {
     } catch (error) {
       throw new Error(`Error creating task: ${error.message}`);
     }
+  }
+
+  async processTask(taskId: string, imagePath: string): Promise<void> {
+    const processedImages = await this.imageProcessorService.processImage(imagePath);
+    await this.taskRepository.updateTask(taskId, { status: 'completed', images: processedImages });
   }
 
   async getTask(taskId: string): Promise<{ taskId: string; status: string; price: number; images?: { path: string }[] }> {

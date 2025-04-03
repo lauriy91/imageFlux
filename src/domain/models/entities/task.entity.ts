@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { Entity, Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn } from "typeorm";
+import { Entity, Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn, Index } from "typeorm";
 
 @Entity("tasks")
 export class Task {
@@ -9,9 +9,11 @@ export class Task {
   @ObjectIdColumn()
   taskId!: string;
 
+  @Index()
   @Column({ default: "pending", nullable: false })
   status: string;
 
+  @Index()
   @Column("decimal")
   price: number;
 
