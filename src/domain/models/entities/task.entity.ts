@@ -19,7 +19,7 @@ export class Task {
   images: Array<{ resolution: string; path: string }>;
 
   @Column({ nullable: true })
-  imagePath: string;
+  originalPath: string;
 
   @CreateDateColumn()
   createdAt: Date;

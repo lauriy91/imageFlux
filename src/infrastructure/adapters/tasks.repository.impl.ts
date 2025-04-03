@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Db, ObjectId } from "mongodb";
+import { Db } from "mongodb";
 import { ITasksRepository } from "src/domain/ports/itasks.repository";
 import { Task } from "src/domain/models/entities/task.entity";
 
@@ -7,23 +7,13 @@ import { Task } from "src/domain/models/entities/task.entity";
 export class TasksRepository implements ITasksRepository {
   constructor(@Inject("MONGO_CONNECTION") private readonly database: Db) {}
 
-  async createTask(imagePath: string, price: number): Promise<Task> {
-    const newTask: Task = {
-      _id: new ObjectId(),
-      taskId: new ObjectId().toString(),
-      status: "pending",
-      price,
-      images: [],
-      imagePath,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+  async createTask(newTask: Task): Promise<Task> {
     await this.database.collection("tasks").insertOne(newTask);
     return newTask;
   }
 
   async getTaskById(taskId: string): Promise<Task | null> {
-    return this.database.collection<Task>("tasks").findOne({ taskId });
+    return await this.database.collection<Task>("tasks").findOne({ taskId });
   }
 
   async getAllTasks(): Promise<Task[]> {

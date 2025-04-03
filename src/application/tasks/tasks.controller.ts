@@ -13,14 +13,14 @@ export class TasksController {
   @ApiOperation({ summary: 'Crear una nueva tarea' })
   @ApiResponse({ status: 201, description: 'Tarea creada exitosamente', type: Task })
   @ApiBody({ type: CreateTaskDto })
-  async createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+  async createTask(@Body() createTaskDto: CreateTaskDto): Promise<{ taskId: string; status: string; price: number }> {
     return this.tasksService.createTask(createTaskDto);
   }
 
   @Get(':taskId')
   @ApiOperation({ summary: 'Obtener una tarea por ID' })
   @ApiResponse({ status: 200, description: 'Tarea encontrada', type: Task })
-  async getTask(@Param("taskId") taskId: string): Promise<Task> {
+  async getTask(@Param("taskId") taskId: string) {
     return this.tasksService.getTask(taskId);
   }
 

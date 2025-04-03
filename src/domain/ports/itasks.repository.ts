@@ -1,7 +1,7 @@
 import { Task } from "src/domain/models/entities/task.entity";
 
 export interface ITasksRepository {
-  createTask(imagePath: string, price: number): Promise<Task>;
+  createTask(newTask: Task): Promise<Task>;
   getTaskById(taskId: string): Promise<Task | null>;
   getAllTasks(): Promise<Task[]>;
   updateTask(taskId: string, updateTaskDto: Partial<Task>): Promise<Task>;

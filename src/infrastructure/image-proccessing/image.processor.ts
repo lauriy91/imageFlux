@@ -4,9 +4,9 @@ import * as path from "path";
 import { v4 as uuidv4 } from "uuid";
 
 export class ImageProcessor {
-    async process(imagePath: string): Promise<{ resolution: string; path: string }[]> {
-      const fileExtension = path.extname(imagePath);
-      const baseName = path.basename(imagePath, fileExtension);
+    async process(originalPath: string): Promise<{ resolution: string; path: string }[]> {
+      const fileExtension = path.extname(originalPath);
+      const baseName = path.basename(originalPath, fileExtension);
       const outputDir = path.join("/output", baseName);
       const resolutions = [1024, 800];
   
@@ -14,7 +14,7 @@ export class ImageProcessor {
   
       for (let resolution of resolutions) {
         const outputPath = path.join(outputDir, `${resolution}`, `${uuidv4()}${fileExtension}`);
-        await sharp(imagePath)
+        await sharp(originalPath)
           .resize(resolution)
           .toFile(outputPath);
         processedImages.push({ resolution: resolution.toString(), path: outputPath });

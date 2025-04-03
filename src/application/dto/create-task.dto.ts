@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export enum TaskStatus {
   PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
+  FAILED = 'failed',
   COMPLETED = 'completed',
 }
 
@@ -18,11 +18,11 @@ export class CreateTaskDto {
 
   @ApiProperty({ example: "uploads/image1.jpg", description: "Ruta donde se halla la imagen a guardar" })
   @IsString()
-  imagePath: string;
+  originalPath: string;
 }
 
 export class UpdateTaskDto {
-  @ApiProperty({ example: "completed", description: "Nuevo estado de la tarea: pending, completed, deleted" })
+  @ApiProperty({ example: "completed", description: "Nuevo estado de la tarea: pending, completed, failed" })
   @IsEnum(TaskStatus, { message: 'Status must be one of: pending, in_progress, completed' })
   @IsString()
   @IsOptional()
@@ -36,5 +36,5 @@ export class UpdateTaskDto {
   @ApiProperty({ example: "uploads/image.jpg", description: "Ruta de la imagen" })
   @IsString()
   @IsOptional()
-  imagePath?: string;
+  originalPath?: string;
 }

@@ -13,24 +13,51 @@ export class TasksService {
     private readonly taskRepository: TasksRepository
   ) {}
 
-  async createTask(createTaskDto: Partial<Task>): Promise<Task> {
+  private getRandomPrice(min: number = 5, max: number = 50): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  async createTask(createTaskDto: Partial<Task>): Promise<{ taskId: string; status: string; price: number }> {
     try {
-      const newTask = this.taskRepositoryOrm.create({
+      const newTask = {
         ...createTaskDto,
+        _id: new ObjectId(),
         taskId: new ObjectId().toString(),
         status: createTaskDto.status ?? "pending",
-      });
-      return await this.taskRepositoryOrm.save(newTask);
+        price: createTaskDto.price ?? this.getRandomPrice(),
+        images: createTaskDto.images ?? [],
+        originalPath: createTaskDto.originalPath ?? "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      const createdTask = await this.taskRepository.createTask(newTask);
+
+      return {
+        taskId: createdTask.taskId,
+        status: createdTask.status,
+        price: createdTask.price,
+      };
     } catch (error) {
       throw new Error(`Error creating task: ${error.message}`);
     }
   }
 
-  async getTask(taskId: string): Promise<Task> {
+  async getTask(taskId: string): Promise<{ taskId: string; status: string; price: number; images?: { path: string }[] }> {
     try {
-      const task = await this.taskRepositoryOrm.findOne({ where: { taskId } });
-      if (!task) throw new NotFoundException(`Task with id ${taskId} not found`);
-      return task;
+      const task = await this.taskRepository.getTaskById(taskId);
+      if (!task) throw new Error("Task not found");
+    
+      const response: { taskId: string; status: string; price: number; images?: { path: string }[] } = {
+        taskId: task.taskId,
+        status: task.status,
+        price: task.price,
+      };
+    
+      if (task.status === "completed") {
+        response.images = task.images.map(image => ({ path: image.path }));
+      }
+    
+      return response;
     } catch (error) {
       throw new Error(`Error fetching task: ${error.message}`);
     }
@@ -40,10 +67,16 @@ export class TasksService {
     return await this.taskRepositoryOrm.find();
   }
 
+  async getTaskById(taskId: string): Promise<Task> {
+    const task = await this.taskRepositoryOrm.findOne({ where: { taskId } });
+    if (!task) throw new NotFoundException(`Task with id ${taskId} not found`);
+    return task;
+  }
+
   async updateTask(taskId: string, updateTaskDto: Partial<Task>): Promise<Task> {
     try {
       await this.taskRepository.updateTask(taskId, updateTaskDto);
-      return await this.getTask(taskId);
+      return await this.getTaskById(taskId);
     } catch (error) {
       throw new Error(`Error updating task: ${error.message}`);
     }

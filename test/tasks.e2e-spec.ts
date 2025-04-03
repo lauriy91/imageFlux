@@ -19,7 +19,7 @@ describe("TasksController (e2e)", () => {
   it("/tasks (POST) - Create Task", async () => {
     const response = await request(app.getHttpServer())
       .post("/tasks")
-      .send({ imagePath: "/input/test-image.jpg" })
+      .send({ originalPath: "/input/test-image.jpg" })
       .expect(201);
     
     expect(response.body.taskId).toBeDefined();
