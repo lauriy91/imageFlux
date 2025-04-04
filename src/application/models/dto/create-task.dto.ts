@@ -1,11 +1,6 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-
-export enum TaskStatus {
-  PENDING = 'pending',
-  FAILED = 'failed',
-  COMPLETED = 'completed',
-}
+import { PathResponse, TaskStatus } from "../interfaces";
 
 export class CreateTaskDto {
   @ApiProperty({ example: "images/upload/imagen-prueba.jpg", description: "Ruta donde se halla la imagen original" })
@@ -30,7 +25,7 @@ export class BaseResponseTaskDto {
 export class ResponseDetailsTaskDto extends BaseResponseTaskDto {
   @ApiProperty({ example: "[{'path': '...\\output\\imagen-prueba2\\1024\\12a1c494a2819bfbb0cb739cb0d2abd7.jpg'}, {'path': '...\\images\\output\\imagen-prueba2\\800\\12a1c494a2819bfbb0cb739cb0d2abd7.jpg'}]", description: "Rutas de imagenes procesadas"})
   @IsString()
-  images?: [{path: string}] | null;
+  images?: PathResponse[] | null;
 }
 
 export class UpdateTaskDto {

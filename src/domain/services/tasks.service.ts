@@ -7,7 +7,8 @@ import { TasksRepository } from "src/infrastructure/adapters/tasks.repository.im
 import { getRandomPrice } from "src/common/utils/utilities";
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ImageProcessorService } from "./image-processor.service";
-import { CreateTaskDto, BaseResponseTaskDto, TaskStatus, ResponseDetailsTaskDto } from "src/application/dto/create-task.dto";
+import { CreateTaskDto, BaseResponseTaskDto, ResponseDetailsTaskDto } from "src/application/models/dto/create-task.dto";
+import { TaskStatus } from "src/application/models/interfaces";
 
 @Injectable()
 export class TasksService {
@@ -33,7 +34,6 @@ export class TasksService {
       response.taskId = createdTask._id.toString(),
       response.status = createdTask.status,
       response.price = createdTask.price
-
       return response;
     } catch (error) {
       throw new Error(`Error creating task: ${error.message}`);

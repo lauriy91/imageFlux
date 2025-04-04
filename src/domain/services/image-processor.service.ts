@@ -4,13 +4,16 @@ import * as sharp from 'sharp';
 import * as crypto from 'crypto';
 
 import { Injectable } from '@nestjs/common';
+import { S3Service } from "./s3.service";
+import { PathResponse } from 'src/application/models/interfaces';
 
 @Injectable()
 export class ImageProcessorService {
 
   private readonly outputPath = path.join(__dirname, '../../../images/output');
+  private readonly s3Service = new S3Service();
 
-  async processImage(imagePath: string): Promise<{ resolution: string; path: string }[]> {
+  async processImage(imagePath: string): Promise<PathResponse[]> {
     if (!fs.existsSync(imagePath)) {
       throw new Error(`Ruta erronea: ${imagePath}`);
     }
@@ -33,7 +36,12 @@ export class ImageProcessorService {
         }
 
         await sharp(imagePath).resize({ width }).toFile(outputPath);
-        return { resolution: width.toString(), path: outputPath };
+
+        const outputFileName = `${imageName}_${width}_${hash}${path.extname(imagePath)}`;
+        const s3Key = `processed/${outputFileName}`;
+        const s3Url = await this.s3Service.uploadFile(outputPath, s3Key);
+
+        return { resolution: width.toString(), path: { local: outputPath,cloud: s3Url} };
       })
     );
   }

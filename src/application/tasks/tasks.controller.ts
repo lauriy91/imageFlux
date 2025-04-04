@@ -2,7 +2,7 @@ import { Controller, Post, Body, Get, Param, Put, Patch, Delete } from "@nestjs/
 import { TasksService } from "../../domain/services/tasks.service";
 import { Task } from "../../domain/models/entities/task.entity";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { CreateTaskDto, BaseResponseTaskDto, UpdateTaskDto } from "src/application/dto/create-task.dto";
+import { BaseResponseTaskDto, CreateTaskDto, UpdateTaskDto } from "../models/dto/create-task.dto";
 
 @ApiTags('tasks') 
 @Controller("tasks")

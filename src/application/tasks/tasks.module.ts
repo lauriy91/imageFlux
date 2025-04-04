@@ -7,6 +7,7 @@ import { Task } from 'src/domain/models/entities/task.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TaskEventsListener } from 'src/common/utils/task-events';
 import { ImageProcessorService } from 'src/domain/services/image-processor.service';
+import { S3Service } from 'src/domain/services/s3.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Task]), EventEmitterModule.forRoot()],
@@ -20,7 +21,8 @@ import { ImageProcessorService } from 'src/domain/services/image-processor.servi
     TasksRepository,
     ImageProcessorService,
     TaskEventsListener,
+    S3Service,
   ],
-  exports: [TasksService, TasksRepository, ImageProcessorService],
+  exports: [TasksService, TasksRepository, ImageProcessorService, S3Service],
 })
 export class TasksModule {}

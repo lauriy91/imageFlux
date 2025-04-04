@@ -1,3 +1,4 @@
+import { PathResponse } from 'src/application/models/interfaces';
 import { ObjectId } from "mongodb";
 import { Entity, Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn, Index } from "typeorm";
 
@@ -15,7 +16,7 @@ export class Task {
   price: number;
 
   @Column("json", { nullable: true }) 
-  images: Array<{ resolution: string; path: string }>;
+  images: PathResponse[];
 
   @Column({ nullable: true })
   originalPath: string;

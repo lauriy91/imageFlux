@@ -9,6 +9,7 @@ import { mongoProvider } from "./infrastructure/datasource/data-connection";
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TaskEventsListener } from "./common/utils/task-events";
 import { ImageProcessorService } from "./domain/services/image-processor.service";
+import { S3Service } from "./domain/services/s3.service";
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { ImageProcessorService } from "./domain/services/image-processor.service
     TypeOrmModule.forRoot({
       type: "mongodb",
       url: process.env.MONGO_URI || "mongodb://localhost:27017",
-      database: "process-image-db",
+      database: process.env.BD || "image_processing",
       entities: [Task],
       synchronize: true,
     }),
@@ -29,7 +30,8 @@ import { ImageProcessorService } from "./domain/services/image-processor.service
     TasksRepository,
     ImageProcessorService,
     mongoProvider,
-    TaskEventsListener
+    TaskEventsListener,
+    S3Service,
   ],
   exports: ["MONGO_CONNECTION"],
 })
