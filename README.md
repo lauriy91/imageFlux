@@ -226,6 +226,19 @@ Las imagenes quedan procesadas en 2 resoluciones **1024px** y **800px**, dentro 
 
 Adicional, dentro de la carpeta common/utils, encontraran dos tipos de colecciones, una de la base de datos mongodb, y al otra de los resultados de las pruebas en postman.
 
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
+### **Imagen a subir sin procesar**
+![alt text](image-4.png)
+
+### **Imagen procesada**
+![alt text](image-5.png)
+
+![alt text](image-6.png)
+
+### **Test unitarios**
+![alt text](image-3.png)
+
+### **Pruebas Documentadas**
+![alt text](image-7.png)
+
+### **Imagenes procesadas en Cloud AWS**
+![alt text](image-8.png)
