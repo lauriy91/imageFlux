@@ -217,7 +217,7 @@ Las pruebas se encuentran en el directorio `tests/`. Se han implementado pruebas
 
 ### **Ejecutar Pruebas**
 ```sh
-npm run test
+npm run test: unit
 ```
 
 ## Resultados de las imagenes procesadas
@@ -235,10 +235,10 @@ Adicional, dentro de la carpeta common/utils, encontraran dos tipos de coleccion
 ![alt text](image-6.png)
 
 ### **Test unitarios**
-![alt text](image-3.png)
+![alt text](image-9.png)
 
 ### **Pruebas Documentadas**
 ![alt text](image-7.png)
 
-### **Imagenes procesadas en Cloud AWS**
+### **Imagenes ya procesadas en Cloud AWS**
 ![alt text](image-8.png)
