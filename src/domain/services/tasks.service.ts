@@ -16,7 +16,7 @@ export class TasksService {
     private readonly taskRepositoryOrm: Repository<Task>,
     private readonly taskRepository: TasksRepository,
     private readonly eventEmitter: EventEmitter2,
-    private readonly imageProcessorService: ImageProcessorService
+    private readonly imageProcessorService: ImageProcessorService,
   ) {}
 
   async createTask(createTaskDto: CreateTaskDto): Promise<BaseResponseTaskDto> {
@@ -28,9 +28,9 @@ export class TasksService {
       newTask.originalPath = createTaskDto.originalPath ?? "";
 
       const createdTask = await this.taskRepository.createTask(newTask);
-      this.eventEmitter.emit('task.process', newTask._id.toString(), newTask.originalPath);
+      this.eventEmitter.emit('task.process', createdTask._id.toString(), newTask.originalPath);
       const response = new BaseResponseTaskDto();
-      response.taskId = newTask._id.toString(),
+      response.taskId = createdTask._id.toString(),
       response.status = createdTask.status,
       response.price = createdTask.price
 

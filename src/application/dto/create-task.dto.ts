@@ -8,7 +8,7 @@ export enum TaskStatus {
 }
 
 export class CreateTaskDto {
-  @ApiProperty({ example: "images/uploads/image1.jpg", description: "Ruta donde se halla la imagen original" })
+  @ApiProperty({ example: "images/upload/imagen-prueba.jpg", description: "Ruta donde se halla la imagen original" })
   @IsString()
   originalPath: string;
 
