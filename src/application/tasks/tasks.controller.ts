@@ -1,8 +1,8 @@
 import { Controller, Post, Body, Get, Param, Put, Patch, Delete } from "@nestjs/common";
-import { TasksService } from "src/domain/services/tasks.service";
-import { Task } from "src/domain/models/entities/task.entity";
+import { TasksService } from "../../domain/services/tasks.service";
+import { Task } from "../../domain/models/entities/task.entity";
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { CreateTaskDto, UpdateTaskDto } from "src/application/dto/create-task.dto";
+import { BaseResponseTaskDto, CreateTaskDto, UpdateTaskDto } from "../models/dto/create-task.dto";
 
 @ApiTags('tasks') 
 @Controller("tasks")
@@ -10,10 +10,10 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear una nueva tarea de procesado de imagenes' })
-  @ApiResponse({ status: 201, description: 'Tarea creada exitosamente', type: Task })
+  @ApiOperation({ summary: 'Crear una nueva tarea' })
+  @ApiResponse({ status: 201, description: 'Tarea creada exitosamente', type: BaseResponseTaskDto })
   @ApiBody({ type: CreateTaskDto })
-  async createTask(@Body() createTaskDto: CreateTaskDto): Promise<{ taskId: string; status: string; price: number }> {
+  async createTask(@Body() createTaskDto: CreateTaskDto): Promise<BaseResponseTaskDto> {
     return this.tasksService.createTask(createTaskDto);
   }
 

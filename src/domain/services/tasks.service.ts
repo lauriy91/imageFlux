@@ -4,56 +4,66 @@ import { ObjectId } from "mongodb";
 import { Task } from "src/domain/models/entities/task.entity";
 import { Repository } from "typeorm";
 import { TasksRepository } from "src/infrastructure/adapters/tasks.repository.impl";
-import { getRandomPrice } from "src/common/utils/get-random-price";
+import { getRandomPrice } from "src/common/utils/utilities";
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ImageProcessorService } from "./image-processor.service";
+import { CreateTaskDto, BaseResponseTaskDto, ResponseDetailsTaskDto } from "src/application/models/dto/create-task.dto";
+import { TaskStatus } from "src/application/models/interfaces";
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task)
     private readonly taskRepositoryOrm: Repository<Task>,
-    private readonly taskRepository: TasksRepository
+    private readonly taskRepository: TasksRepository,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly imageProcessorService: ImageProcessorService,
   ) {}
 
-  async createTask(createTaskDto: Partial<Task>): Promise<{ taskId: string; status: string; price: number }> {
+  async createTask(createTaskDto: CreateTaskDto): Promise<BaseResponseTaskDto> {
     try {
-      const newTask = {
-        ...createTaskDto,
-        _id: new ObjectId(),
-        taskId: new ObjectId().toString(),
-        status: createTaskDto.status ?? "pending",
-        price: createTaskDto.price ?? getRandomPrice(),
-        images: createTaskDto.images ?? [],
-        originalPath: createTaskDto.originalPath ?? "",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      const createdTask = await this.taskRepository.createTask(newTask);
+      const newTask = new Task()
+      newTask.status = TaskStatus.PENDING,
+      newTask.price = getRandomPrice(),
+      newTask.createdAt = new Date()
+      newTask.originalPath = createTaskDto.originalPath ?? "";
 
-      return {
-        taskId: createdTask.taskId,
-        status: createdTask.status,
-        price: createdTask.price,
-      };
+      const createdTask = await this.taskRepository.createTask(newTask);
+      this.eventEmitter.emit('task.process', createdTask._id.toString(), newTask.originalPath);
+      const response = new BaseResponseTaskDto();
+      response.taskId = createdTask._id.toString(),
+      response.status = createdTask.status,
+      response.price = createdTask.price
+      return response;
     } catch (error) {
       throw new Error(`Error creating task: ${error.message}`);
     }
   }
 
-  async getTask(taskId: string): Promise<{ taskId: string; status: string; price: number; images?: { path: string }[] }> {
+  async processTask(taskId: string, imagePath: string): Promise<void> {
+    try {
+      const processedImages = await this.imageProcessorService.processImage(imagePath);
+      await this.taskRepository.updateTask(taskId, { status: 'completed', images: processedImages });
+    } catch (error) {
+      await this.taskRepository.updateTask(taskId, { status: 'failed' });
+    }
+  }
+
+  async getTask(taskId: string): Promise<ResponseDetailsTaskDto> {
     try {
       const task = await this.taskRepository.getTaskById(taskId);
       if (!task) {
         throw new NotFoundException(`Task with ID ${taskId} not found`);
       }
     
-      const response: { taskId: string; status: string; price: number; images?: { path: string }[] } = {
-        taskId: task.taskId,
+      const response = {
+        taskId: task._id.toString(),
         status: task.status,
         price: task.price,
       };
     
-      if (task.status === "completed") {
-        response.images = task.images.map(image => ({ path: image.path }));
+      if (task.status === TaskStatus.COMPLETED) {
+        response['images'] = task.images;
       }
     
       return response;
@@ -67,7 +77,8 @@ export class TasksService {
   }
 
   async getTaskById(taskId: string): Promise<Task> {
-    const task = await this.taskRepositoryOrm.findOne({ where: { taskId } });
+    const _id = new ObjectId(taskId) 
+    const task = await this.taskRepositoryOrm.findOne({ where: { _id } });
     if (!task) throw new NotFoundException(`Task with id ${taskId} not found`);
     return task;
   }

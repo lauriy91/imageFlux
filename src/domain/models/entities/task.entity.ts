@@ -1,3 +1,4 @@
+import { PathResponse } from 'src/application/models/interfaces';
 import { ObjectId } from "mongodb";
 import { Entity, Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn, Index } from "typeorm";
 
@@ -5,10 +6,6 @@ import { Entity, Column, CreateDateColumn, ObjectIdColumn, UpdateDateColumn, Ind
 export class Task {
   @ObjectIdColumn()
   _id!: ObjectId;
-
-  @Index({ unique: true })
-  @ObjectIdColumn()
-  taskId!: string;
 
   @Index()
   @Column({ default: "pending", nullable: false })
@@ -19,14 +16,14 @@ export class Task {
   price: number;
 
   @Column("json", { nullable: true }) 
-  images: Array<{ resolution: string; path: string }>;
+  images: PathResponse[];
 
   @Column({ nullable: true })
   originalPath: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt: Date;
 }

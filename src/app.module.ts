@@ -3,13 +3,13 @@ import { ConfigModule } from "@nestjs/config";
 import { TasksController } from "./application/tasks/tasks.controller";
 import { TasksService } from "./domain/services/tasks.service";
 import { TasksRepository } from "./infrastructure/adapters/tasks.repository.impl";
-import { ImageProcessor } from "./infrastructure/image-proccessing/image.processor";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Task } from "./domain/models/entities/task.entity";
 import { mongoProvider } from "./infrastructure/datasource/data-connection";
-import { MongooseModule } from '@nestjs/mongoose';
-import { TaskSchema } from "./domain/schemas/task.schema";
-import { TasksModule } from "./application/tasks/tasks.module";
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TaskEventsListener } from "./common/utils/task-events";
+import { ImageProcessorService } from "./domain/services/image-processor.service";
+import { S3Service } from "./domain/services/s3.service";
 
 @Module({
   imports: [
@@ -17,22 +17,22 @@ import { TasksModule } from "./application/tasks/tasks.module";
     TypeOrmModule.forRoot({
       type: "mongodb",
       url: process.env.MONGO_URI || "mongodb://localhost:27017",
-      database: "process-image-db",
+      database: process.env.BD || "image_processing",
       entities: [Task],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([Task]),
-    MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
-    TasksModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [TasksController],
   providers: [
     TasksService,
     TasksRepository,
-    ImageProcessor,
+    ImageProcessorService,
     mongoProvider,
-    ImageProcessor
+    TaskEventsListener,
+    S3Service,
   ],
-  exports: ["MONGO_CONNECTION", ImageProcessor],
+  exports: ["MONGO_CONNECTION"],
 })
 export class AppModule {}

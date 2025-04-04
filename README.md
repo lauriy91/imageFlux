@@ -5,11 +5,12 @@ Proyecto con servicios encargados de la gestión de tareas para el procesamiento
 
 ## Tecnologías Utilizadas
 - **NestJS**: Framework para la arquitectura del backend.
+- **Sharp**: Librería para el procesamiento de imagenes.
 - **MongoDB**: Base de datos NoSQL para almacenar las tareas.
 - **Docker**: Contenedor para el despliegue del servicio.
 - **Jest**: Framework para pruebas unitarias e integración.
 - **Kafka**: Broker para la gestión de las tareas.
-- **Azure**: Cloud encargado de alojar imagenes y gestionar el despliegue automatizado.
+- **AWS**: Cloud encargado de alojar imagenes y gestionar el despliegue automatizado.
 - **Github Actions**: Despliegue automatico.
 
 ## Arquitectura elegida del Proyecto: Hexagonal
@@ -17,11 +18,13 @@ Proyecto con servicios encargados de la gestión de tareas para el procesamiento
 📦 src
  ┣ 📂 application (Controladores y validaciones de entrada)
  ┣ 📂 common (Manejador de excepciones)
+ ┣ 📂 config (Configuración para cloud)
  ┣ 📂 domain (Interfaces, modelado, puertos y lógica de negocio)
  ┣ 📂 infrastructure (Conexión a la base de datos, procesador de imagenes, adaptadores)
- ┣ 📂 tests (Pruebas unitarias e integración)
  ┣ 📜 main.ts (Punto de entrada del servicio)
  ┗ 📜 app.module.ts (Módulo principal de la aplicación)
+📦 tests (Pruebas unitarias e integración)
+📦 images (aloja imagenes para el procesamiento)
 ```
 
 ## Instalación y Ejecución
@@ -41,6 +44,10 @@ Crear un archivo `.env` con el siguiente contenido:
 ```env
 MONGO_URI=mongodb://localhost:27017/image_processing
 PORT=3000
+AWS_ACCESS_KEY_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+AWS_SECRET_ACCESS_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+AWS_REGION=us-east-2
+AWS_S3_BUCKET=almacen-photos
 ```
 
 ### Ejecutar en desarrollo
@@ -63,10 +70,6 @@ docker-compose up --build
 **POST** `/tasks`
 ```json
 {
-   "images": [
-    {"resolution": "1024", "path": "/output/image6/1024/f322b730b287.jpg"},
-    {"resolution": "800", "path": "/output/image7/800/202fd8b3174.jpg"}
-  ],
   "originalPath": "uploads/image5.jpg"
 }
 ```
@@ -83,15 +86,23 @@ docker-compose up --build
 **GET** `/tasks/:taskId`
 ```json
 {
-  "taskId": "67ee17f932a1fb13b8533e64",
+  "taskId": "67ef459dc21a5a2b47a272f7",
   "status": "completed",
-  "price": 20,
+  "price": 23,
   "images": [
     {
-      "path": "/output/image6/1024/f322b730b287.jpg"
+      "resolution": "1024",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba3\\1024\\79180b65962ed2f20aa786b422051191.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba3_1024_79180b65962ed2f20aa786b422051191.jpg"
+      }
     },
     {
-      "path": "/output/image7/800/202fd8b3174.jpg"
+      "resolution": "800",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba3\\800\\79180b65962ed2f20aa786b422051191.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba3_800_79180b65962ed2f20aa786b422051191.jpg"
+      }
     }
   ]
 }
@@ -125,29 +136,36 @@ docker-compose up --build
 **PUT** `/tasks/:taskId`
 ```json
 {
-  "status": "completed"
+  "status": "pending",
+  "price": 13,
+  "originalPath": "uploads/image.jpg"
 }
 ```
 **Respuesta:**
 ```json
 {
-  "_id": "67ee17f932a1fb13b8533e63",
-  "taskId": "67ee17f932a1fb13b8533e63",
-  "status": "completed",
-  "price": 5,
+  "_id": "67ef459dc21a5a2b47a272f7",
+  "status": "pending",
+  "price": 13,
   "images": [
     {
       "resolution": "1024",
-      "path": "/output/image6/1024/f322b730b287.jpg"
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba3\\1024\\79180b65962ed2f20aa786b422051191.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba3_1024_79180b65962ed2f20aa786b422051191.jpg"
+      }
     },
     {
       "resolution": "800",
-      "path": "/output/image7/800/202fd8b3174.jpg"
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba3\\800\\79180b65962ed2f20aa786b422051191.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba3_800_79180b65962ed2f20aa786b422051191.jpg"
+      }
     }
   ],
-  "originalPath": "uploads/image5.jpg",
-  "createdAt": "2025-04-03T05:09:13.082Z",
-  "updatedAt": "2025-04-03T05:09:59.328Z"
+  "originalPath": "uploads/image.jpg",
+  "createdAt": "2025-04-04T02:36:13.872Z",
+  "updatedAt": "2025-04-04T02:36:48.739Z"
 }
 ```
 
@@ -161,23 +179,28 @@ docker-compose up --build
 **Respuesta:**
 ```json
 {
-  "_id": "67ee17f932a1fb13b8533e63",
-  "taskId": "67ee17f932a1fb13b8533e63",
+  "_id": "67ef459dc21a5a2b47a272f7",
   "status": "completed",
-  "price": 5,
+  "price": 13,
   "images": [
     {
       "resolution": "1024",
-      "path": "/output/image6/1024/f322b730b287.jpg"
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba3\\1024\\79180b65962ed2f20aa786b422051191.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba3_1024_79180b65962ed2f20aa786b422051191.jpg"
+      }
     },
     {
       "resolution": "800",
-      "path": "/output/image7/800/202fd8b3174.jpg"
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba3\\800\\79180b65962ed2f20aa786b422051191.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba3_800_79180b65962ed2f20aa786b422051191.jpg"
+      }
     }
   ],
-  "originalPath": "uploads/image5.jpg",
-  "createdAt": "2025-04-03T05:09:13.082Z",
-  "updatedAt": "2025-04-03T05:09:59.328Z"
+  "originalPath": "uploads/image.jpg",
+  "createdAt": "2025-04-04T02:36:13.872Z",
+  "updatedAt": "2025-04-04T02:37:28.295Z"
 }
 ```
 
@@ -196,3 +219,13 @@ Las pruebas se encuentran en el directorio `tests/`. Se han implementado pruebas
 ```sh
 npm run test
 ```
+
+## Resultados de las imagenes procesadas
+
+Las imagenes quedan procesadas en 2 resoluciones **1024px** y **800px**, dentro de la carpeta images/output, cada resolucion tiene su imagen debajo de la estructura de nombre: /output/image1/1024/f322b730b287.jpg, si entran a sus propiedades, encuentran la resolución; su otra ubicación, la encuentran en los buckets de S3, dentro de las rutas respuesta.
+
+Adicional, dentro de la carpeta common/utils, encontraran dos tipos de colecciones, una de la base de datos mongodb, y al otra de los resultados de las pruebas en postman.
+
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)

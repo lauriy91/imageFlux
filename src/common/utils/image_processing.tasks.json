@@ -1,0 +1,165 @@
+[{
+  "_id": {
+    "$oid": "67ef4576c21a5a2b47a272f5"
+  },
+  "status": "completed",
+  "price": 13,
+  "images": [
+    {
+      "resolution": "1024",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba\\1024\\4f520e296910e4c17f9f1a70be83bfa8.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba_1024_4f520e296910e4c17f9f1a70be83bfa8.jpg"
+      }
+    },
+    {
+      "resolution": "800",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba\\800\\4f520e296910e4c17f9f1a70be83bfa8.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba_800_4f520e296910e4c17f9f1a70be83bfa8.jpg"
+      }
+    }
+  ],
+  "originalPath": "uploads/image.jpg",
+  "createdAt": {
+    "$date": "2025-04-04T02:35:34.907Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T03:39:00.041Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ef536034db987b1860f36a"
+  },
+  "status": "completed",
+  "price": 17,
+  "images": [
+    {
+      "resolution": "1024",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba3\\1024\\79180b65962ed2f20aa786b422051191.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba3_1024_79180b65962ed2f20aa786b422051191.jpg"
+      }
+    },
+    {
+      "resolution": "800",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba3\\800\\79180b65962ed2f20aa786b422051191.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba3_800_79180b65962ed2f20aa786b422051191.jpg"
+      }
+    }
+  ],
+  "originalPath": "images/upload/imagen-prueba3.jpg",
+  "createdAt": {
+    "$date": "2025-04-04T03:34:56.195Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T03:34:57.384Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ef536d34db987b1860f36b"
+  },
+  "status": "completed",
+  "price": 23,
+  "images": [
+    {
+      "resolution": "1024",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba\\1024\\4f520e296910e4c17f9f1a70be83bfa8.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba_1024_4f520e296910e4c17f9f1a70be83bfa8.jpg"
+      }
+    },
+    {
+      "resolution": "800",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba\\800\\4f520e296910e4c17f9f1a70be83bfa8.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba_800_4f520e296910e4c17f9f1a70be83bfa8.jpg"
+      }
+    }
+  ],
+  "originalPath": "images/upload/imagen-prueba.jpg",
+  "createdAt": {
+    "$date": "2025-04-04T03:35:09.390Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T03:35:10.628Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ef537634db987b1860f36c"
+  },
+  "status": "completed",
+  "price": 37,
+  "images": [
+    {
+      "resolution": "1024",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba2\\1024\\12a1c494a2819bfbb0cb739cb0d2abd7.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba2_1024_12a1c494a2819bfbb0cb739cb0d2abd7.jpg"
+      }
+    },
+    {
+      "resolution": "800",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba2\\800\\12a1c494a2819bfbb0cb739cb0d2abd7.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba2_800_12a1c494a2819bfbb0cb739cb0d2abd7.jpg"
+      }
+    }
+  ],
+  "originalPath": "images/upload/imagen-prueba2.jpg",
+  "createdAt": {
+    "$date": "2025-04-04T03:35:18.856Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T03:35:19.532Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ef537a34db987b1860f36d"
+  },
+  "status": "failed",
+  "price": 49,
+  "images": null,
+  "originalPath": "images/upload/imagen-prueba2d.jpg",
+  "createdAt": {
+    "$date": "2025-04-04T03:35:22.404Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T03:35:22.407Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ef538134db987b1860f36e"
+  },
+  "status": "completed",
+  "price": 50,
+  "images": [
+    {
+      "resolution": "1024",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba2\\1024\\12a1c494a2819bfbb0cb739cb0d2abd7.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba2_1024_12a1c494a2819bfbb0cb739cb0d2abd7.jpg"
+      }
+    },
+    {
+      "resolution": "800",
+      "path": {
+        "local": "C:\\Users\\Laura Rodriguez King\\Documents\\Development\\prueba-between\\images-process\\dist\\images\\output\\imagen-prueba2\\800\\12a1c494a2819bfbb0cb739cb0d2abd7.jpg",
+        "cloud": "https://almacen-photos.s3.us-east-2.amazonaws.com/processed/imagen-prueba2_800_12a1c494a2819bfbb0cb739cb0d2abd7.jpg"
+      }
+    }
+  ],
+  "originalPath": "images/upload/imagen-prueba2.jpg",
+  "createdAt": {
+    "$date": "2025-04-04T03:35:29.807Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T03:35:30.599Z"
+  }
+}]

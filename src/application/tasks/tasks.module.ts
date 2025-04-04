@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TasksController } from './tasks.controller';
-import { TasksService } from 'src/domain/services/tasks.service';
-import { TasksRepository } from 'src/infrastructure/adapters/tasks.repository.impl';
-import { ImageProcessor } from 'src/infrastructure/image-proccessing/image.processor';
+import { TasksService } from '../../domain/services/tasks.service';
+import { TasksRepository } from '../../infrastructure/adapters/tasks.repository.impl';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from 'src/domain/models/entities/task.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TaskEventsListener } from 'src/common/utils/task-events';
+import { ImageProcessorService } from 'src/domain/services/image-processor.service';
+import { S3Service } from 'src/domain/services/s3.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task])],
+  imports: [TypeOrmModule.forFeature([Task]), EventEmitterModule.forRoot()],
   controllers: [TasksController],
   providers: [
     TasksService,
@@ -16,8 +19,10 @@ import { Task } from 'src/domain/models/entities/task.entity';
       useClass: TasksRepository,
     },
     TasksRepository,
-    ImageProcessor,
+    ImageProcessorService,
+    TaskEventsListener,
+    S3Service,
   ],
-  exports: [TasksService, TasksRepository],
+  exports: [TasksService, TasksRepository, ImageProcessorService, S3Service],
 })
 export class TasksModule {}
